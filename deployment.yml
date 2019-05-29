@@ -1,0 +1,237 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crash-deployment
+spec:
+  selector:
+    matchLabels:
+      app: crash
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: crash
+    spec:
+      containers:
+      - name: crash
+        image: wjsc/crash:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crash-random-deployment
+spec:
+  selector:
+    matchLabels:
+      app: crash-random
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: crash-random
+    spec:
+      containers:
+      - name: crash-random
+        image: wjsc/crash-random:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fail-deployment
+spec:
+  selector:
+    matchLabels:
+      app: fail
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: fail
+    spec:
+      containers:
+      - name: fail
+        image: wjsc/fail:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fail-random-deployment
+spec:
+  selector:
+    matchLabels:
+      app: fail-random
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: fail-random
+    spec:
+      containers:
+      - name: fail-random
+        image: wjsc/fail-random:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stop-deployment
+spec:
+  selector:
+    matchLabels:
+      app: stop
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: stop
+    spec:
+      containers:
+      - name: stop
+        image: wjsc/stop:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timeout-deployment
+spec:
+  selector:
+    matchLabels:
+      app: timeout
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: timeout
+    spec:
+      containers:
+      - name: timeout
+        image: wjsc/timeout:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: work-deployment
+spec:
+  selector:
+    matchLabels:
+      app: work
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: work
+    spec:
+      containers:
+      - name: work
+        image: wjsc/work:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crash-service
+spec:
+  selector:
+    app: crash
+  ports:
+  - protocol: TCP
+    port: 4001
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crash-random-service
+spec:
+  selector:
+    app: crash-random
+  ports:
+  - protocol: TCP
+    port: 4002
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fail-service
+spec:
+  selector:
+    app: fail
+  ports:
+  - protocol: TCP
+    port: 4003
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fail-random-service
+spec:
+  selector:
+    app: fail-random
+  ports:
+  - protocol: TCP
+    port: 4004
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stop-service
+spec:
+  selector:
+    app: stop
+  ports:
+  - protocol: TCP
+    port: 4005
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: timeout-service
+spec:
+  selector:
+    app: timeout
+  ports:
+  - protocol: TCP
+    port: 4006
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: work-service
+spec:
+  selector:
+    app: work
+  ports:
+  - protocol: TCP
+    port: 4007
+    targetPort: 80
+  type: NodePort
