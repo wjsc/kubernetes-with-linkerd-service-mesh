@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fail-random-service
+  name: client-service
 spec:
   selector:
-    app: fail-random
+    app: client
   ports:
   - protocol: TCP
-    port: 4004
+    port: 4000
     targetPort: 80
+  type: NodePort

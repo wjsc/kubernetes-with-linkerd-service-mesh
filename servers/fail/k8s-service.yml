@@ -9,4 +9,3 @@ spec:
   - protocol: TCP
     port: 4003
     targetPort: 80
-  type: NodePort

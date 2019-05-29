@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stop-deployment
+  name: client-deployment
 spec:
   selector:
     matchLabels:
-      app: stop
+      app: client
   replicas: 1
   template:
     metadata:
       labels:
-        app: stop
+        app: client
     spec:
       containers:
-      - name: stop
-        image: wjsc/stop:latest
+      - name: client
+        image: wjsc/client:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 80
