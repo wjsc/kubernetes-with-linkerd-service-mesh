@@ -1,0 +1,23 @@
+{
+    "work": {
+        "port": 3000
+    },
+    "crash": {
+        "port": 3001
+    },
+    "crash-random": {
+        "port": 3002
+    },
+    "fail": {
+        "port": 3003
+    },
+    "fail-random": {
+        "port": 3004
+    },
+    "stop": {
+        "port": 3005
+    },
+    "timeout": {
+        "port": 3006
+    }
+}
