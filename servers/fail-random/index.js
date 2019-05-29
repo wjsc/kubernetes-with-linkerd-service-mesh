@@ -1,7 +1,6 @@
 const http = require('http');
-const config = require('../config');
 const type = 'fail-random';
-const port = config[type].port;
+const port = 80;
 const status_ok = 200;
 const status_error = 500;
 

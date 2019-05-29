@@ -1,0 +1,7 @@
+docker build -t wjsc/crash:latest ./crash
+docker build -t wjsc/crash-random:latest ./crash-random
+docker build -t wjsc/fail:latest ./fail
+docker build -t wjsc/fail-random:latest ./fail-random
+docker build -t wjsc/stop:latest ./stop
+docker build -t wjsc/timeout:latest ./timeout
+docker build -t wjsc/work:latest ./work

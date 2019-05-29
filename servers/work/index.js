@@ -1,7 +1,6 @@
 const http = require('http');
-const config = require('../config');
 const type = 'work';
-const port = config[type].port;
+const port = 80;
 const status = 200;
 
 http.createServer( (request, response) => {

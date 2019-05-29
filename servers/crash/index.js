@@ -1,7 +1,6 @@
 const http = require('http');
-const config = require('../config');
 const type = 'crash';
-const port = config[type].port;
+const port = 80;
 
 http.createServer( (request, response) => {
   process.exit(1);
