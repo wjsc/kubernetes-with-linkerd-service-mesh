@@ -69,7 +69,57 @@ kubectl exec -it <pod-name> -n <namespace> -- sh
 kubectl logs -f service/client-service
 curl -XGET $(minikube service client-service --url)
 
-kubectl delete horizontalpodautoscalers.autoscaling client-hpa 
-kubectl delete service client-service 
+// Client Modification
 kubectl delete deployments.apps client-deployment 
+docker build -t wjsc/client:latest ./client
+kubectl apply -f ./client/k8s-deployment.yml
 ```
+
+## Scenario
+
+1. Start transaction
+2. CLIENT send network REQUEST-A to SERVICE-A
+3. SERVICE-A process REQUEST-A
+4. SERVICE-A send RESPONSE-A to CLIENT
+5. CLIENT process RESPONSE-A
+6. CLIENT send REQUEST-B to SERVICE-B
+7. SERVICE-B process RESPONSE-B
+8. SERVICE-B send RESPONSE-B to CLIENT
+9. CLIENT process RESPONSE-B
+10. Commit transaction
+
+### Errors
+
+1. REQUEST-A Network Error
+    Network Resilience mechanism + Idempotent
+        More errors => No consistency error
+
+2. SERVICE-A Process Error
+    a. App error: 
+        i. Pre Process Error => No consistency error
+        ii. Post Process Error => Consistency error
+    b. Infrastructure error: Network Resilience mechanism + Idempotent
+
+3. RESPONSE-A Network Error
+    Network Resilience mechanism + Idempotent
+
+4. CLIENT Process Error
+    Nothing to do -> Unrecoverable consistency error
+
+5. REQUEST-B Network Error
+    Network Resilience mechanism + Idempotent
+
+6. SERVICE-B Process Error
+    a. App error: Recoverable consistency error -> Revert REQUEST-A -> Notify the User
+    b. Infrastructure error: Network Resilience mechanism + Idempotent
+
+7. RESPONSE-B Network Error
+    Network Resilience mechanism + Idempotent
+
+8. Revert REQUEST-A Network Error
+
+9. Revert REQUEST-A Process Error
+    a. App error: Unrecoverable consistency error
+    b. Infrastructure error: Network Resilience mechanism + Idempotent
+
+10. Revert REQUEST-A Response Network Error
