@@ -6,7 +6,8 @@ const timeout = 20000;
 
 http.createServer( (request, response) => {
   setTimeout( () => {
-    response.writeHead(status, {'Content-Type': 'application/json'});
+    response.writeHead(status , {'Content-Type': 'application/json'});
+    console.log(status, request.path);
     response.write(JSON.stringify({ type }));
     response.end();
   }, timeout)

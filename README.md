@@ -25,6 +25,7 @@ docker run -p 3007:80 -d wjsc/work
 
 ## Run Kubernetes Cluster
 ```
+kubectl apply -f ./k8s-namespace.yml
 kubectl apply -f ./client/k8s-service.yml
 kubectl apply -f ./client/k8s-deployment.yml
 kubectl apply -f ./client/k8s-hpa.yml
@@ -61,18 +62,49 @@ kubectl apply -f deployment.yml
 kubectl delete deployment work-deployment
 minikube addons list
 minikube addons enable metrics-server
-kubectl logs -f pod/service/deployment
+kubectl logs -f pod
+kubectl logs -f --selector app=fail-random -n resilience
 kubectl exec -it <pod-name> -n <namespace> -- sh
-
-
+watch -n2 kubectl get all -n resilience
 
 kubectl logs -f service/client-service
-curl -XGET $(minikube service client-service --url)
+curl -XGET $(minikube -n resilience service client-service --url) -i
 
 // Client Modification
-kubectl delete deployments.apps client-deployment 
+kubectl delete deployments.apps client-deployment -n resilience
 docker build -t wjsc/client:latest ./client
 kubectl apply -f ./client/k8s-deployment.yml
+
+// Server Modification
+kubectl delete deployments.apps fail-random-deployment -n resilience
+docker build -t wjsc/fail-random:latest ./servers/fail-random
+kubectl apply -f ./servers/fail-random/k8s-deployment.yml
+
+// Linkerd
+export PATH=$PATH:$HOME/.linkerd2/bin
+linkerd check --pre
+linkerd install | kubectl apply -f -
+linkerd check
+kubectl get -n resilience deploy -o yaml | linkerd inject - | kubectl apply -f -
+linkerd -n resilience check --proxy
+
+// Profile template generation
+linkerd profile -n resilience fail-random-service --template
+
+// Scale down
+kubectl scale -n resilience deployment.apps/fail-random-deployment --replicas=1
+
+// Uninject
+kubectl get --all-namespaces daemonset,deploy,job,statefulset \
+    -l "linkerd.io/control-plane-ns" -o yaml \
+  | linkerd uninject - \
+  | kubectl apply -f -
+
+// Install curl on alpine
+apk add --no-cache curl
+
+// Watch routes
+linkerd -n resilience routes deploy/client-deployment --to svc/fail-random-service
 ```
 
 ## Scenario
