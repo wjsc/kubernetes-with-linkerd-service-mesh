@@ -1,0 +1,17 @@
+apiVersion: linkerd.io/v1alpha1
+kind: ServiceProfile
+metadata:
+  name: remote-service.resilience.svc.cluster.local
+  namespace: resilience
+spec:
+  routes:
+  - name: '/default/fail-random-remote'
+    condition:
+      pathRegex: '/default/fail-random-remote'
+      method: GET
+    isRetryable: true
+    timeout: 10000ms
+  retryBudget:
+    retryRatio: 1
+    minRetriesPerSecond: 10
+    ttl: 10s

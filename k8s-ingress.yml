@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: resilience-ingress
+  namespace: resilience
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /client
+        backend:
+          serviceName: client-service
+          servicePort: 4000
+      - path: /fail-random
+        backend:
+          serviceName: fail-random-service
+          servicePort: 4004
+      - path: /work
+        backend:
+          serviceName: work-service
+          servicePort: 4007
