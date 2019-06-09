@@ -1,7 +1,7 @@
 apiVersion: linkerd.io/v1alpha1
 kind: ServiceProfile
 metadata:
-  name: crash-service.resilience.svc.cluster.local
+  name: timeout-random-service.resilience.svc.cluster.local
   namespace: resilience
 spec:
   routes:
@@ -10,7 +10,7 @@ spec:
       pathRegex: '/'
       method: GET
     isRetryable: true
-    timeout: 10000ms
+    timeout: 2000ms
   retryBudget:
     retryRatio: 0.2
     minRetriesPerSecond: 10

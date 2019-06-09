@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: crash-deployment
+  name: timeout-random-deployment
   namespace: resilience
 spec:
   selector:
     matchLabels:
-      app: crash
+      app: timeout-random
   replicas: 3
   template:
     metadata:
       labels:
-        app: crash
+        app: timeout-random
     spec:
       containers:
-      - name: crash
-        image: wjsc/crash:latest
+      - name: timeout-random
+        image: wjsc/timeout-random:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 80

@@ -1,7 +1,7 @@
 apiVersion: linkerd.io/v1alpha1
 kind: ServiceProfile
 metadata:
-  name: remote-service.resilience.svc.cluster.local
+  name: bmxxnts66d.execute-api.us-east-1.amazonaws.com
   namespace: resilience
 spec:
   routes:
@@ -10,8 +10,8 @@ spec:
       pathRegex: '/default/fail-random-remote'
       method: GET
     isRetryable: true
-    timeout: 10000ms
+    timeout: 2000ms
   retryBudget:
-    retryRatio: 1
+    retryRatio: 0.2
     minRetriesPerSecond: 10
     ttl: 10s

@@ -10,7 +10,7 @@ spec:
       pathRegex: '/'
       method: GET
     isRetryable: true
-    timeout: 10000ms
+    timeout: 2000ms
   retryBudget:
     retryRatio: 0.2
     minRetriesPerSecond: 10

@@ -7,15 +7,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /client
+      - path: /
         backend:
           serviceName: client-service
           servicePort: 4000
-      - path: /fail-random
-        backend:
-          serviceName: fail-random-service
-          servicePort: 4004
-      - path: /work
-        backend:
-          serviceName: work-service
-          servicePort: 4007

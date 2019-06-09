@@ -1,49 +1,47 @@
 
-## Build docker images
+## 1. Build docker images
 ```
 docker build -t wjsc/client:latest ./client
-docker build -t wjsc/crash:latest ./servers/crash
 docker build -t wjsc/crash-random:latest ./servers/crash-random
-docker build -t wjsc/fail:latest ./servers/fail
 docker build -t wjsc/fail-random:latest ./servers/fail-random
 docker build -t wjsc/stop:latest ./servers/stop
-docker build -t wjsc/timeout:latest ./servers/timeout
+docker build -t wjsc/timeout-random:latest ./servers/timeout-random
 docker build -t wjsc/work:latest ./servers/work
+
+// Delete old docker images
+docker image prune -f
 ```
 
-## Run containers
+## 2. Launch cluster and Linkerd 
 ```
-docker run -p 3000:80 -d wjsc/client
-docker run -p 3001:80 -d wjsc/crash
-docker run -p 3002:80 -d wjsc/crash-random
-docker run -p 3003:80 -d wjsc/fail
-docker run -p 3004:80 -d wjsc/fail-random
-docker run -p 3005:80 -d wjsc/stop
-docker run -p 3006:80 -d wjsc/timeout
-docker run -p 3007:80 -d wjsc/work
+// Start cluster
+minikube start --vm-driver=none
+
+// Install linkerd Control Plane
+linkerd install | kubectl apply -f -
+
+// Enable ingress (only first time run)
+minikube addons enable ingress
+
+// Enable metrics server (only first time run)
+minikube addons enable metrics-server
+
 ```
 
-## Run Kubernetes Cluster
+## 3. Apply Kubernetes Files
 ```
 kubectl apply -f ./k8s-namespace.yml
+kubectl apply -f ./k8s-ingress.yml
 kubectl apply -f ./client/k8s-service.yml
 kubectl apply -f ./client/k8s-service-profile.yml
 kubectl apply -f ./client/k8s-deployment.yml
 kubectl apply -f ./client/k8s-hpa.yml
 kubectl apply -f ./servers/_remote/k8s-service.yml
 kubectl apply -f ./servers/_remote/k8s-service-profile.yml
-kubectl apply -f ./servers/crash/k8s-service.yml
-kubectl apply -f ./servers/crash/k8s-deployment.yml
-kubectl apply -f ./servers/crash/k8s-hpa.yml
-kubectl apply -f ./servers/crash/k8s-service-profile.yml
 kubectl apply -f ./servers/crash-random/k8s-service.yml
 kubectl apply -f ./servers/crash-random/k8s-deployment.yml
 kubectl apply -f ./servers/crash-random/k8s-hpa.yml
 kubectl apply -f ./servers/crash-random/k8s-service-profile.yml
-kubectl apply -f ./servers/fail/k8s-service.yml
-kubectl apply -f ./servers/fail/k8s-deployment.yml
-kubectl apply -f ./servers/fail/k8s-hpa.yml
-kubectl apply -f ./servers/fail/k8s-service-profile.yml
 kubectl apply -f ./servers/fail-random/k8s-service.yml
 kubectl apply -f ./servers/fail-random/k8s-deployment.yml
 kubectl apply -f ./servers/fail-random/k8s-hpa.yml
@@ -52,15 +50,31 @@ kubectl apply -f ./servers/stop/k8s-service.yml
 kubectl apply -f ./servers/stop/k8s-deployment.yml
 kubectl apply -f ./servers/stop/k8s-hpa.yml
 kubectl apply -f ./servers/stop/k8s-service-profile.yml
-kubectl apply -f ./servers/timeout/k8s-service.yml
-kubectl apply -f ./servers/timeout/k8s-deployment.yml
-kubectl apply -f ./servers/timeout/k8s-hpa.yml
-kubectl apply -f ./servers/timeout/k8s-service-profile.yml
+kubectl apply -f ./servers/timeout-random/k8s-service.yml
+kubectl apply -f ./servers/timeout-random/k8s-deployment.yml
+kubectl apply -f ./servers/timeout-random/k8s-hpa.yml
+kubectl apply -f ./servers/timeout-random/k8s-service-profile.yml
 kubectl apply -f ./servers/work/k8s-service.yml
 kubectl apply -f ./servers/work/k8s-deployment.yml
 kubectl apply -f ./servers/work/k8s-hpa.yml
 kubectl apply -f ./servers/work/k8s-service-profile.yml
 
+```
+
+## 4. Inject Linkerd Sidecars
+```
+kubectl get -n resilience deploy -o yaml | linkerd inject - | kubectl apply -f -
+
+```
+
+## Run containers
+```
+docker run -p 3000:80 -d wjsc/client
+docker run -p 3002:80 -d wjsc/crash-random
+docker run -p 3004:80 -d wjsc/fail-random
+docker run -p 3005:80 -d wjsc/stop
+docker run -p 3006:80 -d wjsc/timeout-random
+docker run -p 3007:80 -d wjsc/work
 ```
 
 ## Misc
@@ -72,9 +86,9 @@ kubectl create -f deployment.yml --save-config
 kubectl apply -f deployment.yml
 kubectl delete deployment work-deployment
 minikube addons list
-minikube addons enable metrics-server
 kubectl logs -f pod
 kubectl logs -f --selector app=fail-random -n resilience -c fail-random
+kubectl logs -f --selector app=timeout-random -n resilience -c timeout-random
 kubectl logs -f --selector app=client -n resilience -c client
 kubectl exec -it <pod-name> -n <namespace> -- sh
 watch -n2 kubectl get all -n resilience
@@ -125,11 +139,19 @@ linkerd -n resilience routes deploy/client-deployment --to svc/fail-random-servi
 //Remote service
 echo '127.0.0.1 www.remote.com' >> /etc/hosts
 
-// Enable ingress
-minikube addons enable ingress
-
 // Curl to ingress
-curl -XGET http://localhost/client -kLi
+curl -XGET http://localhost/ -kLi
+```
+
+## Using kubens to Swith namespaces
+```
+// Download kubens
+curl -XGET https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens --output ~/kubens
+chmod +x ~/kubens
+mv ~/kubens /usr/bin
+
+// Switch context to resilience namespace
+kubens resilience
 ```
 
 ## Scenario

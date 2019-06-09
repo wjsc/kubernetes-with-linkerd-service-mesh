@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: timeout-service
+  name: timeout-random-service
   namespace: resilience
 spec:
   selector:
-    app: timeout
+    app: timeout-random
   ports:
   - protocol: TCP
     port: 4006
