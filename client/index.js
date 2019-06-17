@@ -19,7 +19,7 @@ http.createServer( async (request, response) => {
     const result  = await Promise.all( [
       fetch(url_fail_random, options).then(res => throwOnError(res, [200]) || res.json()),
       fetch(url_crash_random, options).then(res => throwOnError(res, [200]) || res.json()),
-      fetch(url_remote, options).then(res => throwOnError(res, [200]) || res.json()),
+      // fetch(url_remote, options).then(res => throwOnError(res, [200]) || res.json()),
       fetch(url_work, options).then(res => throwOnError(res, [200]) || res.json())
     ]);
 
