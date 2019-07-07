@@ -1,4 +1,5 @@
 
+
 ## 1. Build docker images
 ```
 docker build -t wjsc/client:latest ./client
@@ -153,6 +154,16 @@ mv ~/kubens /usr/bin
 // Switch context to resilience namespace
 kubens resilience
 ```
+
+
+
+In macOS you need to run this command before building the docker images
+```
+eval $(minikube docker-env)
+```
+This is required to actually utilise docker daemon running on minikube, and henceforth build your image on the minikubes docker and thus expect it to be available to the minikubes k8s engine without pulling from external registry.
+
+
 
 ## Scenario
 
